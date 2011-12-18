@@ -1,0 +1,35 @@
+
+
+
+	http://www.causes.com/jobs#job1
+	Software Engineer
+	
+	We’re looking for exceptional engineers to join the Causes Engineering team. You should have experience 
+	developing software in a variety of environments and should be comfortable with Linux servers, open-source 
+	databases, elegant code and efficient algorithms.
+	
+	At Causes, engineers get a chance to make an impact right away in building products for our massive user 
+	base. Ideal candidates should have:
+	
+	Ideal candidates should have:
+	
+	    4+ year college degree in computer science (or related) OR equivalent professional experience
+	    Work experience developing software in a business environment, preferably with Linux/UNIX
+	    Database, application architecture and software systems design experience
+	    Experience with at least one dynamic language (Ruby, Python, JavaScript, PHP, Perl, Scheme, Lisp, etc.)
+	    Excellent problem solving abilities, a firm grasp on algorithms and rock-solid computer science fundamentals
+	
+	Of course greatness comes in all shapes, so we keep an open mind. We encourage you to apply if you like 
+	difficult technical challenges, helping society at large and having fun with great people.
+	Like puzzles? Solve this problem to catch our attention! Be sure to follow the instructions exactly.
+	
+	Two words are friends if they have a Levenshtein distance of 1. That is, you can add, remove, or substitute 
+	exactly one letter in word X to create word Y. A word’s social network  consists of all of its friends, 
+	plus all of their friends, and all of their friends’ friends, and so on. Write a program to tell us how 
+	big the social network for the word “causes” is, using this word list. Have fun!
+	
+	Include your answer, along with your thought process, notes, and any code along with your resume.
+	
+	To Apply
+	Send your text, PDF or HTML resume to jobs@causes.com with the subject “Software Engineer Position.”
+	
