@@ -1,7 +1,5 @@
 
-In response to ... http://www.causes.com/jobs#job1
-
-Software Engineer
+In response to an old job posting at http://www.causes.com for a Software Engineer
 
 We’re looking for exceptional engineers to join the Causes Engineering team. You should have experience 
 developing software in a variety of environments and should be comfortable with Linux servers, open-source 
