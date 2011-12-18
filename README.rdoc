@@ -1,5 +1,6 @@
 
-http://www.causes.com/jobs#job1
+In response to ... http://www.causes.com/jobs#job1
+
 Software Engineer
 
 We’re looking for exceptional engineers to join the Causes Engineering team. You should have experience 
@@ -29,4 +30,5 @@ big the social network for the word “causes” is, using this word list. Have 
 Include your answer, along with your thought process, notes, and any code along with your resume.
 
 To Apply
+
 Send your text, PDF or HTML resume to jobs@causes.com with the subject “Software Engineer Position.”
