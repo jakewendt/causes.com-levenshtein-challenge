@@ -34,6 +34,10 @@ end
 
 task :build_network do
 #	words = File.readlines('levenshtein.list').collect(&:chomp!)[0..9999]
+
+#	Not only is this the list of word to look for friends, 
+#	it is the list of potential friends!
+#	Shortening it, will shorten both.  
 	words = File.readlines('levenshtein.list').collect(&:chomp!)
 
 	processed = if File.exists?('network.yml') && ( network = YAML::load(IO.read( 'network.yml') )).is_a?(Hash)
@@ -51,6 +55,11 @@ task :build_network do
 	#	Or 366 hours
 	#	Or 15 days.  Seriously?  2 weeks!
 	#	Even a 1 second a word, that's still 3 straight days of processing.
+#
+#	This has gotten out of control.  
+#	With the full list, it is now taking ~30 seconds a word.
+#	That is potentially 3 months!!!
+#
 	words.each do |word|
 		puts "Processing #{word}"
 		if processed.include?(word)
