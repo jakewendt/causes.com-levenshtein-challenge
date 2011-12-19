@@ -33,7 +33,8 @@ end
 #	rather than wait until the end.
 
 task :build_network do
-	words = File.readlines('levenshtein.list').collect(&:chomp!)[0..9999]
+#	words = File.readlines('levenshtein.list').collect(&:chomp!)[0..9999]
+	words = File.readlines('levenshtein.list').collect(&:chomp!)
 
 	processed = if File.exists?('network.yml') && ( network = YAML::load(IO.read( 'network.yml') )).is_a?(Hash)
 		network.keys 
