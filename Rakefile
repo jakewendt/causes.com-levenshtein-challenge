@@ -62,20 +62,31 @@ task :build_network do
 #	That is potentially 3 months!!!
 #
 	words.each do |word|
-		puts "Processing #{word}"
 		if processed.include?(word)
-			puts "Skipping as already processed."
+			puts "Skipping #{word} already processed."
 			next
+		else
+			printf "Processing #{word}. " #	use printf so time is on same line
 		end
 		friends = []
-		word_length = word.length
+#		word_length = word.length
+#
+#	levenshtein_distance == 1
+#Processing apiol
+#219.270000   0.750000 220.020000 (221.079529)
+#
+#	old_levenshtein_distance_is_one?
+#Processing apimanias
+#119.910000   0.420000 120.330000 (120.864198)
+#
+#	new levenshtein_distance_is_one?
 #Processing apiculture
 #  8.240000   0.740000   8.980000 (  9.070253)
-#		puts Benchmark.measure{
+#
+		time = Benchmark.measure{
 		words.each do |stranger|
 #		select_words = words.select{|w| ((word_length-1)..(word_length+1)).to_a.include?(w.length) }
 #		select_words.each do |stranger|
-#			puts Benchmark.measure{
 #
 #	While this doesn't take long, it is the longest part of the process.
 #	I'm also not interested in the actual distance, so I'd like to write
@@ -83,14 +94,16 @@ task :build_network do
 #	"levenshtein_distance_is_one?" method.
 #	This method will simply return true or false
 #
-#			distance = word.levenshtein_distance_to(stranger) 
-#			friends.push(stranger) if distance == 1	#	don't include self which would be 0
-
-			friends.push(stranger) if word.levenshtein_distance_is_one?(stranger)	#	0.00002
-#			friends.push(stranger) if word.old_levenshtein_distance_is_one?(stranger)	#	0.0005
-#			}
+#			friends.push(stranger) if word.levenshtein_distance_to(stranger) == 1        #  don't include self which would be 0
+#			friends.push(stranger) if word.old_levenshtein_distance_is_one?(stranger)    #	0.0005
+			friends.push(stranger) if word.levenshtein_distance_is_one?(stranger)        #	0.00002 (about 10-20 times faster, but still slow)
 		end
-#		} #		puts Benchmark.measure{
+		} #		Benchmark.measure{
+		#	between 5 and 8 seconds.  Fast considering, but still slow.  
+		#	265000 * 5 seconds ~ 370 hours ~ 2 weeks!
+		#	
+		puts time.real	
+
 		#	In order to allow to stopping and restarting, write the data as we get it.
 		#	Using to_yaml doesn't quite work as desired, so do it by hand.  
 		#	Not really that complicated.

@@ -51,10 +51,12 @@ String.class_eval do
 			when 0
 				return self.diff_count(word) == 1
 			when 1
+#	a = 'apple'; b='appsle'
 #a.match(/#{b.chars.collect{|l|"(#{l}?).*?"}.join}/).to_a
 #=> ["apple", "a", "p", "p", "l", "e"]
 				long,short = ( self.length > word.length ) ? [self,word] : [word,self]
-				return short.match(/#{long.chars.collect{|l|"(#{l}?).*?"}.join}/)[0] == short
+#				return short.match(/#{long.chars.collect{|l|"(#{l}?).*?"}.join}/)[0] == short
+				return short.match(/#{long.chars.collect{|l|"#{l}?.*?"}.join}/)[0] == short
 			else
 				return false 
 		end
