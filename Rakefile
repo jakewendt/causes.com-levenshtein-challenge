@@ -1,6 +1,7 @@
 require 'levenshtein'
 require 'rake/testtask'
 require 'yaml'
+require 'benchmark'
 
 desc 'Default: run unit tests.'
 task :default => :test
@@ -68,11 +69,13 @@ task :build_network do
 		end
 		friends = []
 		word_length = word.length
-#		words.each do |stranger|
-#			next unless ((word_length-1)..(word_length+1)).to_a.include?(stranger.length)
-		#	perhaps a bit faster
-		select_words = words.select{|w| ((word_length-1)..(word_length+1)).to_a.include?(w.length) }
-		select_words.each do |stranger|
+#Processing apiculture
+#  8.240000   0.740000   8.980000 (  9.070253)
+#		puts Benchmark.measure{
+		words.each do |stranger|
+#		select_words = words.select{|w| ((word_length-1)..(word_length+1)).to_a.include?(w.length) }
+#		select_words.each do |stranger|
+#			puts Benchmark.measure{
 #
 #	While this doesn't take long, it is the longest part of the process.
 #	I'm also not interested in the actual distance, so I'd like to write
@@ -80,14 +83,14 @@ task :build_network do
 #	"levenshtein_distance_is_one?" method.
 #	This method will simply return true or false
 #
-
 #			distance = word.levenshtein_distance_to(stranger) 
 #			friends.push(stranger) if distance == 1	#	don't include self which would be 0
 
-			if word.levenshtein_distance_is_one?(stranger)
-				friends.push(stranger) 
-			end
+			friends.push(stranger) if word.levenshtein_distance_is_one?(stranger)	#	0.00002
+#			friends.push(stranger) if word.old_levenshtein_distance_is_one?(stranger)	#	0.0005
+#			}
 		end
+#		} #		puts Benchmark.measure{
 		#	In order to allow to stopping and restarting, write the data as we get it.
 		#	Using to_yaml doesn't quite work as desired, so do it by hand.  
 		#	Not really that complicated.
@@ -115,6 +118,52 @@ task :friends_of do
 		puts "Searching for friends of ... #{word}"
 		network = YAML::load(IO.read( 'network.yml') )
 		puts network[word].inspect
+	end
+	exit	#	MUST exit, otherwise rake attempts to run tasks of the words
+end
+
+
+
+
+desc "Find and Display the levenshtein friends of the given word."
+task :find_friends_of do
+	args = $*.dup.slice(1..-1)
+	if args.length == 0
+		puts
+		puts "Word required"
+		puts "Usage: rake #{$*} [word]"
+		puts
+		exit
+	end
+	args.each do |me|
+		puts "Searching for friends of ... #{me}"
+		puts "Loading strangers list"
+		strangers = File.readlines('levenshtein.list').collect(&:chomp!)
+		puts "Done loading strangers list"
+		strangers << me unless strangers.include?(me)
+		network = []
+		unsearched = [strangers.delete(me)]
+
+		begin 
+			searching = unsearched.shift
+			network.push( searching )
+			puts "Searching for friends of #{searching}"
+			puts "Current strangers count:#{strangers.length}"
+			puts "Current network count:#{network.length}"
+			puts "Current unsearched count:#{unsearched.length}"
+
+			strangers.each do |w|
+				if searching.levenshtein_distance_is_one?(w)
+					puts "--:#{searching}:#{w}:"
+					unsearched.push(strangers.delete(w))	#	not a stranger anymore so remove from the list and don't check anymore
+				end
+			end
+
+		end while unsearched.length > 0
+
+		puts "All Done."
+		puts "Final Network Count:#{network.length} (includes #{me})"
+		puts "Final Stranger Count:#{strangers.length}"
 	end
 	exit	#	MUST exit, otherwise rake attempts to run tasks of the words
 end
