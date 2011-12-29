@@ -63,13 +63,12 @@ task :build_network do
 #
 	words.each do |word|
 		if processed.include?(word)
-			puts "Skipping #{word} already processed."
+			puts "Skipping #{word} as already processed."
 			next
 		else
 			printf "Processing #{word}. " #	use printf so time is on same line
 		end
 		friends = []
-#		word_length = word.length
 #
 #	levenshtein_distance == 1
 #Processing apiol
@@ -84,20 +83,34 @@ task :build_network do
 #  8.240000   0.740000   8.980000 (  9.070253)
 #
 		time = Benchmark.measure{
-		words.each do |stranger|
-#		select_words = words.select{|w| ((word_length-1)..(word_length+1)).to_a.include?(w.length) }
-#		select_words.each do |stranger|
-#
-#	While this doesn't take long, it is the longest part of the process.
-#	I'm also not interested in the actual distance, so I'd like to write
-#	a "levenshtein_distance_to_greater_than_one?" method or
-#	"levenshtein_distance_is_one?" method.
-#	This method will simply return true or false
-#
-#			friends.push(stranger) if word.levenshtein_distance_to(stranger) == 1        #  don't include self which would be 0
-#			friends.push(stranger) if word.old_levenshtein_distance_is_one?(stranger)    #	0.0005
-			friends.push(stranger) if word.levenshtein_distance_is_one?(stranger)        #	0.00002 (about 10-20 times faster, but still slow)
-		end
+
+#	#		words.each do |stranger|
+#	
+#			#	If initially select words of the appropriate lengths, 2-8 seconds
+#			#	I'm surprised that select wouldn't add more overhead.
+			word_length = word.length
+#			select_words = words.select{|w| ((word_length-1)..(word_length+1)).to_a.include?(w.length) }
+#			select_words.each do |stranger|
+#	#
+#	#	While this doesn't take long, it is the longest part of the process.
+#	#	I'm also not interested in the actual distance, so I'd like to write
+#	#	a "levenshtein_distance_to_greater_than_one?" method or
+#	#	"levenshtein_distance_is_one?" method.
+#	#	This method will simply return true or false
+#	#
+#	#			friends.push(stranger) if word.levenshtein_distance_to(stranger) == 1        #  don't include self which would be 0
+#	#			friends.push(stranger) if word.old_levenshtein_distance_is_one?(stranger)    #	0.0005
+#				friends.push(stranger) if word.levenshtein_distance_is_one?(stranger)        #	0.00002 (about 10-20 times faster, but still slow)
+#			end
+
+
+			friends = words.select do |w|
+#				((word_length-1)..(word_length+1)).to_a.include?(w.length) && word.levenshtein_distance_is_one?(w)
+#	No apparent difference
+				word.levenshtein_distance_is_one?(w)
+			end
+
+
 		} #		Benchmark.measure{
 		#	between 5 and 8 seconds.  Fast considering, but still slow.  
 		#	265000 * 5 seconds ~ 370 hours ~ 2 weeks!
@@ -177,6 +190,105 @@ task :find_friends_of do
 		puts "All Done."
 		puts "Final Network Count:#{network.length} (includes #{me})"
 		puts "Final Stranger Count:#{strangers.length}"
+	end
+	exit	#	MUST exit, otherwise rake attempts to run tasks of the words
+end
+
+######################################################################
+
+
+
+desc "Show the levenshtein network count of the given word."
+task :show_network_count_for do
+	args = $*.dup.slice(1..-1)
+	if args.length == 0
+		puts "\nWord required\nUsage: rake #{$*} [word]\n\n"
+		exit
+	end
+
+	args.each do |me|
+		network_file = "#{me}_network.yml"
+		if File.exists?(network_file) 
+			network_hash = YAML::load(IO.read(network_file) ) 
+			puts network_hash.inspect
+			#	includes the word 'false', which ruby treats as false!!!!!
+			#	NoMethodError: undefined method `<=>' for false:FalseClass
+			#	so have to explicitly convert these to strings before sort will work
+			puts network_hash.to_a.flatten.collect(&:to_s).uniq.sort.inspect
+			puts network_hash.to_a.flatten.uniq.length	#	includes self
+		else
+			puts "Expected file #{network_file} not found."
+		end
+	end
+	exit
+end
+
+desc "Build the levenshtein network of the given word."
+task :build_network_for do
+	args = $*.dup.slice(1..-1)
+	if args.length == 0
+		puts "\nWord required\nUsage: rake #{$*} [word]\n\n"
+		exit
+	end
+
+	args.each do |me|
+		puts "Searching for friends of ... #{me}"
+		puts "Loading strangers list"
+		words = File.readlines('levenshtein.list').collect(&:chomp!)
+		puts "Done loading strangers list"
+
+		network_file = "#{me}_network.yml"
+		network = {}
+		processed = if File.exists?(network_file) && ( network = YAML::load(IO.read(network_file) ) ).is_a?(Hash)
+			network.keys 
+		else
+			[]
+		end
+		f = File.open(network_file, "a")
+
+		unsearched = [me]
+		begin 
+			searching = unsearched.shift
+			puts "Processing:#{searching}"
+
+			if processed.include?(searching)
+				puts " Skipping #{searching} as already processed."
+				unsearched += network[searching] if network.has_key?(searching)
+				unsearched.uniq!
+			else
+				time = Benchmark.measure{
+					puts " Searching for friends of #{searching}"
+					puts " Current unsearched count:#{unsearched.length}"
+					processed << searching
+
+					friends = words.select do |w|
+						searching.levenshtein_distance_is_one?(w)
+					end
+
+					friends.each do |friend|
+						unsearched << friend unless( processed.include?(friend) || unsearched.include?(friend) )
+					end
+
+					#	In order to allow to stopping and restarting, write the data as we get it.
+					#	Using to_yaml doesn't quite work as desired, so do it by hand.  
+					#	Not really that complicated.
+					if friends.empty?
+						f.puts("#{searching}: []")
+					else
+						f.puts("#{searching}:")
+						f.puts(friends.collect{|w| "- #{w}"})
+					end
+				} #		Benchmark.measure{
+				#	between 5 and 8 seconds.  Fast considering, but still slow.  
+				#	265000 * 5 seconds ~ 370 hours ~ 2 weeks!
+				#	
+				puts " Time: #{time.real} seconds"
+			end
+		end while unsearched.length > 0
+
+		puts "All Done."
+#		puts "Final Network Count:#{network.length} (includes #{me})"
+		f.close
 	end
 	exit	#	MUST exit, otherwise rake attempts to run tasks of the words
 end
