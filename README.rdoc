@@ -30,3 +30,28 @@ Include your answer, along with your thought process, notes, and any code along 
 To Apply
 
 Send your text, PDF or HTML resume to jobs@causes.com with the subject “Software Engineer Position.”
+
+
+
+
+
+
+
+
+
+If I were to do this again, I would be much more direct and use unix utilities, mostly grep
+
+Something like this for "one" would produce all those with a Levenshtein distance of 1.
+
+grep -E '^(.one|one.|o.e|.ne|on.)$' levenshtein.list > newfriends
+
+Then this would create a new source of non friends (don't want any circular logic. it would never finish)
+
+grep -vs -E '^(.one|one.|o.e|.ne|on.)$' levenshtein.list > newlevenshtein.list
+
+Concatenate some files.  Replace others.  Loop over new friends.  Append the list to
+already_checked_friends. ......
+
+There's a good chance this would take a while.  Should be faster than my ruby
+things which compared all words to all words.
+
