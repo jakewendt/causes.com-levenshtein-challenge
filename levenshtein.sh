@@ -25,6 +25,14 @@ if [ -f 'indifferents' -a -f 'newfriends' ]; then
 
 #		regex=`echo causes | awk 'BEGIN{FS=""}{for(i=1;i<=NF;i++){for(j=1;j<=NF;j++){ if(i==j){printf ".\?"}else{printf $j} }printf "|"}}'
 
+#	or perhaps something like this with sed ...
+#	> echo causes | sed 's/./.?/3'
+#	ca.?ses
+#	> echo causes | sed 's/./.?/6'
+#	cause.?
+#	> echo causes | sed 's/./.?/7'
+#	causes
+
 
 		regex=`echo $newfriend | awk 'BEGIN{FS=""}{ 
 			printf "."$0"|"
