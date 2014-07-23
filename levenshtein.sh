@@ -16,14 +16,27 @@ if [ -f 'indifferents' -a -f 'newfriends' ]; then
 
 
 #		convert "causes" to ".causes|.?auses|c.?uses|ca.?ses|cau.?es|caus.?s|cause.?|causes."
-		regex=".causes|.?auses|c.?uses|ca.?ses|cau.?es|caus.?s|cause.?|causes."
+#		regex=".causes|.?auses|c.?uses|ca.?ses|cau.?es|caus.?s|cause.?|causes."
 
 #	everything is waiting on this ^^^^
 
 
+#	awk 'BEGIN{FS=""}{for(i=1;i<=NF;i++)print $i}'
+
+#		regex=`echo causes | awk 'BEGIN{FS=""}{for(i=1;i<=NF;i++){for(j=1;j<=NF;j++){ if(i==j){printf ".\?"}else{printf $j} }printf "|"}}'
 
 
-
+		regex=`echo $newfriend | awk 'BEGIN{FS=""}{ 
+			printf "."$0"|"
+			for(i=1;i<=NF;i++){ 
+				for(j=1;j<=NF;j++){ 
+					printf (i==j)?".\?":$j 
+				}
+				printf "|"
+			}
+			printf $0"."
+		}'`
+		echo $regex
 
 		#	yay! script converts the "s to 's
 		grep -E "^($regex)$" indifferents >> newfriends
