@@ -54,3 +54,14 @@ if [ -f 'indifferents' -a -f 'newfriends' ]; then
 else
 	echo "indifferents or newfriends file not found"
 fi
+
+
+
+#
+#	Only took aboiut 12 hours!
+#
+#> wc -l indifferents newfriends friends
+#  199988 indifferents
+#       0 newfriends
+#   64070 friends
+#  264058 total
