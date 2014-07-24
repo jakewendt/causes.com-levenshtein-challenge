@@ -18,9 +18,6 @@ if [ -f 'indifferents' -a -f 'newfriends' ]; then
 #		convert "causes" to ".causes|.?auses|c.?uses|ca.?ses|cau.?es|caus.?s|cause.?|causes."
 #		regex=".causes|.?auses|c.?uses|ca.?ses|cau.?es|caus.?s|cause.?|causes."
 
-#	everything is waiting on this ^^^^
-
-
 #	awk 'BEGIN{FS=""}{for(i=1;i<=NF;i++)print $i}'
 
 #		regex=`echo causes | awk 'BEGIN{FS=""}{for(i=1;i<=NF;i++){for(j=1;j<=NF;j++){ if(i==j){printf ".\?"}else{printf $j} }printf "|"}}'
@@ -46,7 +43,6 @@ if [ -f 'indifferents' -a -f 'newfriends' ]; then
 		}'`
 		echo $regex
 
-		#	yay! script converts the "s to 's
 		grep -E "^($regex)$" indifferents >> newfriends
 		grep -vs -E "^($regex)$" indifferents > indifferents.tmp
 		mv indifferents.tmp indifferents
@@ -58,10 +54,11 @@ fi
 
 
 #
-#	Only took aboiut 12 hours!
+#	Only took about 12 hours!
 #
 #> wc -l indifferents newfriends friends
 #  199988 indifferents
 #       0 newfriends
 #   64070 friends
 #  264058 total
+
